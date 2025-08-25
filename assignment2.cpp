@@ -669,3 +669,143 @@ int main() {
     std::cout << "The number of distinct elements is: " << distinctCount << std::endl;
     return 0;
 }
+
+// Additional Questions 1
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int countPairs(vector<int> &arr, int k) {
+    int n = arr.size();
+    int cnt = 0;
+
+    // generate all possible pairs
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            
+            // If absolute difference = k, then increment
+            // count by 1
+            if (abs(arr[i] - arr[j]) == k) {
+                cnt += 1;
+            }
+        }
+    }
+    return cnt;
+}
+
+int main() {
+    vector<int> arr = {1, 4, 1, 4, 5};
+    int k = 3;
+
+    cout << countPairs(arr, k);
+    return 0;
+}
+
+// Additional Questions 2
+#include <bits/stdc++.h>
+using namespace std;
+
+bool canSplit(string s) {
+    int n = s.size();
+    // Try all possible first and second split points
+    for (int i = 1; i < n; i++) {
+        for (int j = i+1; j < n; j++) {
+            string a = s.substr(0, i);
+            string b = s.substr(i, j-i);
+            string c = s.substr(j);
+            if ((a.find(b) != string::npos && c.find(b) != string::npos) ||
+                (a.find(c) != string::npos && b.find(c) != string::npos) ||
+                (b.find(a) != string::npos && c.find(a) != string::npos)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+int main() {
+    string s = "abcab";
+    if (canSplit(s)) cout << "YES\n";
+    else cout << "NO\n";
+    return 0;
+}
+
+// Additional Questions 3
+#include <bits/stdc++.h>
+using namespace std;
+
+bool isAnagram(string s1, string s2) {
+    if (s1.size() != s2.size()) return false;
+    sort(s1.begin(), s1.end());
+    sort(s2.begin(), s2.end());
+    return s1 == s2;
+}
+
+int main() {
+    string s1 = "listen", s2 = "silent";
+    if (isAnagram(s1, s2)) cout << "YES\n";
+    else cout << "NO\n";
+    return 0;
+}
+
+// Additional Questions 4
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+void sort012(vector<int> &arr) {
+    
+    // standard sorting function
+    sort(arr.begin(), arr.end()); 
+}
+
+int main() {
+    vector<int> arr = {0, 1, 2, 0, 1, 2};
+    
+    sort012(arr);
+
+    for (int i = 0; i < arr.size(); i++)
+        cout << arr[i] << " ";
+    return 0;
+}
+
+// Additional Questions 5
+#include <bits/stdc++.h>
+using namespace std;
+
+void duplicateTwos(vector<int>& arr) {
+    int n = arr.size();
+    int possibleDups = 0;
+    int last = n - 1;
+
+    // Count duplications
+    for (int i = 0; i <= last - possibleDups; i++) {
+        if (arr[i] == 2) {
+            if (i == last - possibleDups) {
+                arr[last] = 2;
+                last--;
+                break;
+            }
+            possibleDups++;
+        }
+    }
+
+    int i = last - possibleDups;
+    for (int j = last; i >= 0; i--, j--) {
+        if (arr[i] == 2) {
+            arr[j] = 2;
+            j--;
+            arr[j] = 2;
+        } else {
+            arr[j] = arr[i];
+        }
+    }
+}
+
+int main() {
+    vector<int> arr = {1, 2, 3, 4, 2, 5};
+    duplicateTwos(arr);
+    for (int x : arr) cout << x << " ";
+    return 0;
+}
