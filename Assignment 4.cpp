@@ -257,3 +257,242 @@ int main() {
 
     return 0;
 }
+
+// 3
+#include <iostream>
+#include <queue>
+using namespace std;
+
+void interleaveQueue(queue<int>& q) {
+    int n = q.size();
+    if (n % 2 != 0) {
+        cout << "Queue size must be even\n";
+        return;
+    }
+
+    queue<int> firstHalf;
+    for (int i = 0; i < n / 2; i++) {
+        firstHalf.push(q.front());
+        q.pop();
+    }
+
+    while (!firstHalf.empty()) {
+        q.push(firstHalf.front()); firstHalf.pop();
+        q.push(q.front()); q.pop();
+    }
+}
+
+int main() {
+    queue<int> q;
+    int n, x;
+    cout << "Enter even number of elements: ";
+    cin >> n;
+    for (int i = 0; i < n; i++) {
+        cin >> x; q.push(x);
+    }
+
+    interleaveQueue(q);
+
+    cout << "Interleaved Queue: ";
+    while (!q.empty()) {
+        cout << q.front() << " ";
+        q.pop();
+    }
+    return 0;
+}
+
+// 4
+#include <iostream>
+#include <queue>
+#include <unordered_map>
+using namespace std;
+
+void firstNonRepeating(string str) {
+    unordered_map<char, int> freq;
+    queue<char> q;
+
+    for (char c : str) {
+        freq[c]++;
+        q.push(c);
+
+        while (!q.empty() && freq[q.front()] > 1) {
+            q.pop();
+        }
+
+        if (q.empty()) cout << -1 << " ";
+        else cout << q.front() << " ";
+    }
+    cout << endl;
+}
+
+int main() {
+    string s;
+    cout << "Enter string: ";
+    cin >> s;
+    firstNonRepeating(s);
+    return 0;
+}
+
+// 5(a)
+#include <iostream>
+#include <queue>
+using namespace std;
+
+// Using 2 Queues
+class Stack2Q {
+    queue<int> q1, q2;
+public:
+    void push(int x) { q1.push(x); }
+    void pop() {
+        if (q1.empty()) return;
+        while (q1.size() > 1) { q2.push(q1.front()); q1.pop(); }
+        q1.pop();
+        swap(q1, q2);
+    }
+    int top() {
+        while (q1.size() > 1) { q2.push(q1.front()); q1.pop(); }
+        int t = q1.front();
+        q2.push(t); q1.pop();
+        swap(q1, q2);
+        return t;
+    }
+};
+
+// Using 1 Queue
+class Stack1Q {
+    queue<int> q;
+public:
+    void push(int x) {
+        q.push(x);
+        for (int i=0; i<q.size()-1; i++) {
+            q.push(q.front());
+            q.pop();
+        }
+    }
+    void pop() { if (!q.empty()) q.pop(); }
+    int top() { return q.front(); }
+};
+
+int main() {
+    Stack2Q s1; s1.push(10); s1.push(20); s1.pop(); cout << s1.top() << endl;
+    Stack1Q s2; s2.push(30); s2.push(40); cout << s2.top() << endl;
+}
+
+// Additional Questions 1
+#include <iostream>
+#include <queue>
+using namespace std;
+
+void generateBinary(int n) {
+    queue<string> q;
+    q.push("1");
+    for (int i=0; i<n; i++) {
+        string s = q.front(); q.pop();
+        cout << s << " ";
+        q.push(s+"0");
+        q.push(s+"1");
+    }
+}
+
+int main() { generateBinary(5); }
+
+// Additional Questions 2
+#include <iostream>
+#include <queue>
+#include <climits>
+using namespace std;
+
+int minIndex(queue<int>& q, int sortedIndex) {
+    int minIdx = -1, minVal = INT_MAX, n = q.size();
+    for (int i=0; i<n; i++) {
+        int curr = q.front(); q.pop();
+        if (curr < minVal && i <= sortedIndex) {
+            minVal = curr; minIdx = i;
+        }
+        q.push(curr);
+    }
+    return minIdx;
+}
+
+void insertMinToRear(queue<int>& q, int minIdx) {
+    int n = q.size();
+    int minVal;
+    for (int i=0; i<n; i++) {
+        int curr = q.front(); q.pop();
+        if (i == minIdx) minVal = curr;
+        else q.push(curr);
+    }
+    q.push(minVal);
+}
+
+void sortQueue(queue<int>& q) {
+    for (int i=1; i<=q.size(); i++) {
+        int minIdx = minIndex(q, q.size()-i);
+        insertMinToRear(q, minIdx);
+    }
+}
+
+int main() {
+    queue<int> q; q.push(11); q.push(5); q.push(4); q.push(21);
+    sortQueue(q);
+    while(!q.empty()){ cout<<q.front()<<" "; q.pop(); }
+}
+
+// Additional Questions 3
+#include <iostream>
+#include <queue>
+#include <stack>
+using namespace std;
+
+bool checkSorted(queue<int> q) {
+    stack<int> st;
+    int expected = 1;
+    int n = q.size();
+    while (!q.empty()) {
+        if (q.front() == expected) {
+            expected++; q.pop();
+        } else if (!st.empty() && st.top() == expected) {
+            expected++; st.pop();
+        } else {
+            st.push(q.front()); q.pop();
+        }
+    }
+    while (!st.empty() && st.top() == expected) {
+        st.pop(); expected++;
+    }
+    return (expected-1 == n);
+}
+
+int main() {
+    queue<int> q; q.push(5); q.push(1); q.push(2); q.push(3); q.push(4);
+    cout << (checkSorted(q) ? "Yes" : "No");
+}
+
+// Additional Questions 4
+#include <iostream>
+#include <queue>
+#include <stack>
+using namespace std;
+
+int countStudents(vector<int>& students, vector<int>& sandwiches) {
+    queue<int> q;
+    for (int s : students) q.push(s);
+    int i=0, rotations=0;
+    while (!q.empty() && rotations < q.size()) {
+        if (q.front() == sandwiches[i]) {
+            q.pop(); i++; rotations=0;
+        } else {
+            q.push(q.front()); q.pop();
+            rotations++;
+        }
+    }
+    return q.size();
+}
+
+int main() {
+    vector<int> students = {1,1,0,0};
+    vector<int> sandwiches = {0,1,0,1};
+    cout << countStudents(students, sandwiches);
+}
+
+
