@@ -383,171 +383,274 @@ int main() {
 }
 
 
-// 5
-#include<iostream>
+// Additional questions 1
+#include <bits/stdc++.h>
 using namespace std;
 
-void heapify(int arr[], int n, int i) {
-    int largest = i;
-    int left = 2 * i + 1;
-    int right = 2 * i + 2;
-    if (left < n && arr[left] > arr[largest])
-        largest = left;
-    if (right < n && arr[right] > arr[largest])
-        largest = right;
-    if (largest != i) {
-        swap(arr[i], arr[largest]);
-        heapify(arr, n, largest);
-    }
-}
-
-void heapSortIncreasing(int arr[], int n) {
-    for (int i = n / 2 - 1; i >= 0; i--)
-        heapify(arr, n, i);
-    for (int i = n - 1; i > 0; i--) {
-        swap(arr[0], arr[i]);
-        heapify(arr, i, 0);
-    }
-}
-
-void minHeapify(int arr[], int n, int i) {
-    int smallest = i;
-    int left = 2 * i + 1;
-    int right = 2 * i + 2;
-    if (left < n && arr[left] < arr[smallest])
-        smallest = left;
-    if (right < n && arr[right] < arr[smallest])
-        smallest = right;
-    if (smallest != i) {
-        swap(arr[i], arr[smallest]);
-        minHeapify(arr, n, smallest);
-    }
-}
-
-void heapSortDecreasing(int arr[], int n) {
-    for (int i = n / 2 - 1; i >= 0; i--)
-        minHeapify(arr, n, i);
-    for (int i = n - 1; i > 0; i--) {
-        swap(arr[0], arr[i]);
-        minHeapify(arr, i, 0);
-    }
-}
-
-int main() {
-    int arr1[] = {0, 11, 13, 56, 6, 7};
-    int n = sizeof(arr1) / sizeof(arr1[0]);
-    heapSortIncreasing(arr1, n);
-    cout << "Sorted in Increasing Order: ";
-    for (int i = 0; i < n; i++)
-        cout << arr1[i] << " ";
-    cout << endl;
-    heapSortDecreasing(arr1, n);
-    cout << "Sorted in Decreasing Order: ";
-    for (int i = 0; i < n; i++)
-        cout << arr1[i] << " ";
-    cout << endl;
-    return 0;
-}
-
-
-// 6
-#include <iostream>
-using namespace std;
-
-class PriorityQueue {
-private:
-    int heap[100];
-    int size;
-
-public:
-    PriorityQueue() {
-        size = 0;
-    }
-
-    void insert(int value) {
-        heap[size] = value;
-        int i = size;
-        size++;
-        while (i != 0 && heap[(i - 1) / 2] < heap[i]) {
-            swap(heap[i], heap[(i - 1) / 2]);
-            i = (i - 1) / 2;
-        }
-    }
-
-    void deleteMax() {
-        if (size == 0) {
-            cout << "Priority Queue is Empty!\n";
-            return;
-        }
-
-        cout << "Deleted Max Element: " << heap[0] << endl;
-        heap[0] = heap[size - 1];
-        size--;
-        int i = 0;
-
-        while (true) {
-            int left = 2 * i + 1;
-            int right = 2 * i + 2;
-            int largest = i;
-
-            if (left < size && heap[left] > heap[largest])
-                largest = left;
-            if (right < size && heap[right] > heap[largest])
-                largest = right;
-
-            if (largest != i) {
-                swap(heap[i], heap[largest]);
-                i = largest;
-            } else break;
-        }
-    }
-
-    void display() {
-        if (size == 0) {
-            cout << "Priority Queue is Empty!\n";
-            return;
-        }
-        cout << "Priority Queue (Max Heap): ";
-        for (int i = 0; i < size; i++)
-            cout << heap[i] << " ";
-        cout << endl;
-    }
+struct TreeNode{
+    int val;
+    TreeNode *left,*right;
+    TreeNode(int x):val(x),left(NULL),right(NULL){}
 };
 
-int main() {
-    PriorityQueue pq;
-    int choice, val;
-
-    do {
-        cout << "\nPriority Queue Menu\n";
-        cout << "1. Insert\n2. Delete Max\n3. Display\n4. Exit\n";
-        cout << "Enter choice: ";
-        cin >> choice;
-
-        switch (choice) {
-            case 1:
-                cout << "Enter value to insert: ";
-                cin >> val;
-                pq.insert(val);
-                break;
-            case 2:
-                pq.deleteMax();
-                break;
-            case 3:
-                pq.display();
-                break;
-            case 4:
-                cout << "Exiting...\n";
-                break;
-            default:
-                cout << "Invalid Choice!\n";
+TreeNode* buildTree(vector<int>&a){
+    if(a.empty() || a[0]==-1) return NULL;
+    queue<TreeNode*> q;
+    TreeNode* root=new TreeNode(a[0]);
+    q.push(root);
+    int i=1;
+    while(!q.empty() && i<a.size()){
+        TreeNode* cur=q.front(); 
+        q.pop();
+        if(i<a.size() && a[i]!=-1){
+            cur->left=new TreeNode(a[i]);
+            q.push(cur->left);
         }
-    } while (choice != 4);
-
-    return 0;
+        i++;
+        if(i<a.size() && a[i]!=-1){
+            cur->right=new TreeNode(a[i]);
+            q.push(cur->right);
+        }
+        i++;
+    }
+    return root;
 }
 
-// 7
+int sumLeft(TreeNode* root,bool isLeft){
+    if(!root) return 0;
+    if(!root->left && !root->right){
+        if(isLeft) return root->val;
+        return 0;
+    }
+    return sumLeft(root->left,true)+sumLeft(root->right,false);
+}
+
+int main(){
+    int n;
+    cin>>n;
+    vector<int>a(n);
+    for(int i=0;i<n;i++) cin>>a[i];
+    TreeNode* root=buildTree(a);
+    cout<<sumLeft(root,false);
+}
+
+
+// Additional questions 2
+#include <bits/stdc++.h>
+using namespace std;
+
+struct TreeNode{
+    int val;
+    TreeNode *left,*right;
+    TreeNode(int x):val(x),left(NULL),right(NULL){}
+};
+
+vector<TreeNode*> build(int l,int r){
+    if(l>r) return {NULL};
+    vector<TreeNode*> res;
+    for(int i=l;i<=r;i++){
+        vector<TreeNode*> L=build(l,i-1);
+        vector<TreeNode*> R=build(i+1,r);
+        for(auto a:L) for(auto b:R){
+            TreeNode* root=new TreeNode(i);
+            root->left=a;
+            root->right=b;
+            res.push_back(root);
+        }
+    }
+    return res;
+}
+
+vector<TreeNode*> generateTrees(int n){
+    if(n==0) return {};
+    return build(1,n);
+}
+
+void printPre(TreeNode* root){
+    if(!root){
+        cout<<"null ";
+        return;
+    }
+    cout<<root->val<<" ";
+    printPre(root->left);
+    printPre(root->right);
+}
+
+int main(){
+    int n;
+    cin>>n;
+    vector<TreeNode*> trees=generateTrees(n);
+    for(auto t:trees){
+        printPre(t);
+        cout<<endl;
+    }
+}
+
+
+// Additional questions 3
+#include <bits/stdc++.h>
+using namespace std;
+
+struct TreeNode{
+    int val;
+    TreeNode *left,*right;
+    TreeNode(int x):val(x),left(NULL),right(NULL){}
+};
+
+TreeNode* buildTree(vector<int>&a){
+    if(a.empty() || a[0]==-1) return NULL;
+    queue<TreeNode*> q;
+    TreeNode* root=new TreeNode(a[0]);
+    q.push(root);
+    int i=1;
+    while(!q.empty() && i<a.size()){
+        TreeNode* cur=q.front(); 
+        q.pop();
+        if(i<a.size() && a[i]!=-1){
+            cur->left=new TreeNode(a[i]);
+            q.push(cur->left);
+        }
+        i++;
+        if(i<a.size() && a[i]!=-1){
+            cur->right=new TreeNode(a[i]);
+            q.push(cur->right);
+        }
+        i++;
+    }
+    return root;
+}
+
+int maxDepth(TreeNode* root){
+    if(!root) return 0;
+    return 1 + max(maxDepth(root->left), maxDepth(root->right));
+}
+
+int main(){
+    int T;
+    cin >> T;
+    while(T--){
+        int n;
+        cin >> n;
+        vector<int>a(n);
+        for(int i=0;i<n;i++) cin >> a[i];
+        TreeNode* root = buildTree(a);
+        cout << maxDepth(root) << endl;
+    }
+}
+
+
+// Additional questions 4
+#include <bits/stdc++.h>
+using namespace std;
+
+struct TreeNode{
+    int val;
+    TreeNode *left,*right;
+    TreeNode(int x):val(x),left(NULL),right(NULL){}
+};
+
+TreeNode* buildTree(vector<int>&a){
+    if(a.empty() || a[0]==-1) return NULL;
+    queue<TreeNode*> q;
+    TreeNode* root=new TreeNode(a[0]);
+    q.push(root);
+    int i=1;
+    while(!q.empty() && i<a.size()){
+        TreeNode* cur=q.front(); q.pop();
+        if(i<a.size() && a[i]!=-1){
+            cur->left=new TreeNode(a[i]);
+            q.push(cur->left);
+        }
+        i++;
+        if(i<a.size() && a[i]!=-1){
+            cur->right=new TreeNode(a[i]);
+            q.push(cur->right);
+        }
+        i++;
+    }
+    return root;
+}
+
+vector<int> rightView(TreeNode* root){
+    vector<int> ans;
+    if(!root) return ans;
+    queue<TreeNode*> q;
+    q.push(root);
+    while(!q.empty()){
+        int s=q.size();
+        for(int i=0;i<s;i++){
+            TreeNode* cur=q.front(); q.pop();
+            if(i==s-1) ans.push_back(cur->val);
+            if(cur->left) q.push(cur->left);
+            if(cur->right) q.push(cur->right);
+        }
+    }
+    return ans;
+}
+
+int main(){
+    int T; 
+    cin>>T;
+    while(T--){
+        int n; 
+        cin>>n;
+        vector<int>a(n);
+        for(int i=0;i<n;i++) cin>>a[i];
+        TreeNode* root=buildTree(a);
+        vector<int> r=rightView(root);
+        for(int x:r) cout<<x<<" ";
+        cout<<endl;
+    }
+}
+
+
+// Additional questions 5
+#include <bits/stdc++.h>
+using namespace std;
+
+struct TreeNode{
+    int val;
+    TreeNode *left,*right;
+    TreeNode(int x):val(x),left(NULL),right(NULL){}
+};
+
+TreeNode* build(vector<int>&pre,int ps,int pe,vector<int>&in,int is,int ie,unordered_map<int,int>&mp){
+    if(ps>pe || is>ie) return NULL;
+    TreeNode* root=new TreeNode(pre[ps]);
+    int k=mp[pre[ps]];
+    int left=k-is;
+    root->left=build(pre,ps+1,ps+left,in,is,k-1,mp);
+    root->right=build(pre,ps+left+1,pe,in,k+1,ie,mp);
+    return root;
+}
+
+TreeNode* buildTree(vector<int>&pre,vector<int>&in){
+    unordered_map<int,int> mp;
+    for(int i=0;i<in.size();i++) mp[in[i]]=i;
+    return build(pre,0,pre.size()-1,in,0,in.size()-1,mp);
+}
+
+void levelOrder(TreeNode* root){
+    if(!root) return;
+    queue<TreeNode*> q;
+    q.push(root);
+    while(!q.empty()){
+        TreeNode* cur=q.front(); q.pop();
+        cout<<cur->val<<" ";
+        if(cur->left) q.push(cur->left);
+        if(cur->right) q.push(cur->right);
+    }
+}
+
+int main(){
+    vector<int> pre={1,2,4,5,3};
+    vector<int> in={4,2,5,1,3};
+    TreeNode* root=buildTree(pre,in);
+    levelOrder(root);
+}
+
+
+// Additional questions 6
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -591,8 +694,7 @@ int main() {
     return 0;
 }
 
-
-// 8
+// Additional questions 7
 #include <bits/stdc++.h>
 using namespace std;
 
